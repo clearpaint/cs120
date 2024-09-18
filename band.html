@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Band</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        /* Offset for header and footer */
+        body::before {
+            content: "";
+            display: block;
+            height: 72px; /* Padding equal to the header height */
+        }
+        .content {
+            padding-bottom: 100px; /* Padding for the footer */
+        }
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 50px 0;
+        }
+        header h1 {
+            margin: 0;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #444;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between; /* Align content across full width */
+            align-items: center; /* Ensure the audio player and links align vertically */
+            padding: 10px 20px;
+            box-sizing: border-box; /* Ensure padding is part of the total width */
+        }
+        nav .nav-links {
+            display: flex;
+            justify-content: flex-start; /* Left-align the links */
+            flex-grow: 1;
+        }
+        nav a {
+            margin-right: 30px; /* Add some spacing between links */
+            color: white;
+            text-decoration: none;
+        }
+        nav .audio-player {
+            display: flex;
+            align-items: center; /* Vertically align the audio player */
+            margin-left: auto; /* Ensure the audio player is pushed to the far right */
+        }
+        section {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+        }
+        footer {
+            background-color: #344;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            z-index: 1000;
+        }
+        footer img {
+            margin: 0 10px;
+            width: 30px;
+            vertical-align: middle;
+        }
+        footer a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>BAND NAME</h1>
+        <p>TAG LINE PARTY LIKE ITS 1999!</p>
+    </header>
+
+    <nav>
+        <div class="nav-links">
+            <a href="#news">News</a>
+            <a href="#bio">Bio</a>
+            <a href="#media">Media</a>
+            <a href="#shows">Shows</a>
+            <a href="#booking">Booking</a>
+        </div>
+        <!-- Audio Player Right-Aligned -->
+        <div class="audio-player">
+            <audio controls>
+                <source src="sample-audio.mp3" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </nav>
+
+    <div class="content">
+        <section id="news">
+            <h2>Latest News</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+        </section>
+
+        <section id="bio">
+            <h2>Meet the Band</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+        </section>
+
+        <section id="media">
+            <h2>Our Music</h2>
+            <p>Bringing the house down!</p>
+            <video controls width="100%">
+                <source src="sample-video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </section>
+    </div>
+
+    <footer>
+        <p>Contact us for bookings or follow us on social media!</p>
+        <a href="https://www.facebook.com" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+        </a>
+        <a href="https://www.instagram.com" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+        </a>
+        <a href="https://bandcamp.com" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Bandcamp-logotype-aqua.svg" alt="Bandcamp">
+        </a>
+    </footer>
+
+</body>
+</html>
