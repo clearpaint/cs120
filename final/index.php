@@ -13,7 +13,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="header">My Application</div>
+<div class="header">Image Tagging App</div>
 <div class="container">
   <form action="authenticate.php" method="post">
     <h2>Login</h2>
