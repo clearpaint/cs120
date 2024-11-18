@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+    form { background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+    label, input { display: block; width: 100%; margin-bottom: 10px; }
+    button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    #error { color: red; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<form action="authenticate.php" method="post">
+  <h2>Login</h2>
+  <!-- Error message placeholder -->
+  <p id="error"></p>
+
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username" required>
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required>
+
+  <button type="submit">Login</button>
+</form>
+
+<script>
+  // JavaScript to display error messages passed via URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const error = urlParams.get('error');
+  if (error) {
+    document.getElementById('error').innerText = decodeURIComponent(error);
+  }
+</script>
+
+</body>
+</html>
