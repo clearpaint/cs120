@@ -9,10 +9,11 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 }
 
 // FTP server details
-$ftp_server = "ftp.yourdomain.com";
-$ftp_port = 21;
-$ftp_user = "ftp_username";
-$ftp_pass = "ftp_password";
+$config = include 'config.php';
+$ftp_server = $config['ftp_server'];
+$ftp_port = $config['ftp_port'];
+$ftp_user = $config['ftp_user'];
+$ftp_pass = $config['ftp_pass'];
 
 if (isset($_FILES['file'])) {
     $file = $_FILES['file']['tmp_name'];
@@ -47,14 +48,14 @@ if (isset($_FILES['file'])) {
         $debug[] = "File uploaded successfully to: $remote_file";
 
         // Step 4: Call API with FTP file URL
-        $file_url = "https://yourdomain.com/uploads/" . urlencode($file_name);
-        $api_key = "IMAGGA_API_KEY";
-        $api_secret = "IMAGGA_API_SECRET";
+        $file_url = $config['ftp_domain'] . "/uploads/" . urlencode($file_name);
+        $api_key =  $config['api_key'];
+        $api_secret =  $config['api_secret'];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://api.imagga.com/v2/tags?image_url=" . urlencode($file_url));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERPWD, "$api_key:$api_secret");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERPWD, "$api_key:$api_secret");      
 
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
@@ -63,6 +64,12 @@ if (isset($_FILES['file'])) {
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
             $data = json_decode($response, true);
+
+            $debug[] = "Raw API Response: " . $response;
+
+            echo json_encode(['message' => 'API call debug info', 'debug' => $debug]);
+            exit;
+           
         } else {
             $debug[] = "API call failed: $curl_error";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);

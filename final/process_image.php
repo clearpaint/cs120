@@ -39,8 +39,9 @@ if ($inputOption === 'upload' && isset($_FILES['file']) && $_FILES['file']['erro
   $debug[] = "File uploaded successfully: $destPath";
 
   // Imagga API credentials
-  $api_key = 'acc_74179c62baa1fe3';
-  $api_secret = 'b5d57bf2b166c425951dda16671004';
+  $config = include 'config.php';
+  $api_key = $config['api_key'];
+  $api_secret = $config['api_secret'];
 
   // Prepare the image for the API call
   $imageData = base64_encode(file_get_contents($destPath));
@@ -85,8 +86,8 @@ if ($inputOption === 'upload' && isset($_FILES['file']) && $_FILES['file']['erro
   }
 
   // Imagga API credentials
-  $api_key = 'acc_74179c62baa1fe3';
-  $api_secret = '72b5d57bf2b166c425951dda16671004';
+  $api_key = $config['api_key'];
+  $api_secret = $config['api_secret'];
 
   // Call the Imagga API with the image URL
   $ch = curl_init();
