@@ -1,0 +1,10 @@
+<?php
+return [
+  'ftp_server' => "FTP_SERVER",
+  'ftp_user' => "FTP_USER",
+  'ftp_pass' => "FTP_PASS",
+  'ftp_port' => "21",
+  'domain' => 'FTP_DOMAIN',
+  'api_key' => 'API_KEY',
+  'api_secret' => 'API_SECRET'
+];

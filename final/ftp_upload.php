@@ -9,10 +9,11 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 }
 
 // FTP server details
-$ftp_server = "ftp.yourdomain.com";
-$ftp_port = 21;
-$ftp_user = "ftp_username";
-$ftp_pass = "ftp_password";
+$config = include 'config.php';
+$ftp_server = $config['ftp_server'];
+$ftp_port = $config['ftp_port'];
+$ftp_user = $config['ftp_user'];
+$ftp_pass = $config['ftp_pass'];
 
 if (isset($_FILES['file'])) {
     $file = $_FILES['file']['tmp_name'];
@@ -47,9 +48,9 @@ if (isset($_FILES['file'])) {
         $debug[] = "File uploaded successfully to: $remote_file";
 
         // Step 4: Call API with FTP file URL
-        $file_url = "https://yourdomain.com/uploads/" . urlencode($file_name);
-        $api_key = "IMAGGA_API_KEY";
-        $api_secret = "IMAGGA_API_SECRET";
+        $file_url = $config['ftp_domain'] . urlencode($file_name);
+        $api_key =  $config['api_key'];
+        $api_secret =  $config['api_secret'];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://api.imagga.com/v2/tags?image_url=" . urlencode($file_url));
