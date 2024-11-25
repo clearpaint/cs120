@@ -2,6 +2,7 @@
 session_start();
 
 $debug = [];
+// $threshold = isset($_POST['threshold']) ? (float)$_POST['threshold'] : 50;
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     echo json_encode(['message' => 'Unauthorized access', 'debug' => $debug]);
@@ -63,13 +64,7 @@ if (isset($_FILES['file'])) {
 
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
-            $data = json_decode($response, true);
-
-            $debug[] = "Raw API Response: " . $response;
-
-            echo json_encode(['message' => 'API call debug info', 'debug' => $debug]);
-            exit;
-           
+            $data = json_decode($response, true);           
         } else {
             $debug[] = "API call failed: $curl_error";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
@@ -80,7 +75,9 @@ if (isset($_FILES['file'])) {
         // Step 5: Write metadata based on API response
         if (isset($data['result']['tags'])) {
             $tags = array_map(function($tag) {
-                return $tag['tag']['en'];
+                // if ($tag['confidence'] >= $threshold) {
+                //     return $tag['tag']['en'];
+                // }
             }, $data['result']['tags']);
             $description = implode(", ", $tags);
 
