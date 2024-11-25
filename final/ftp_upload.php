@@ -75,9 +75,7 @@ if (isset($_FILES['file'])) {
         // Step 5: Write metadata based on API response
         if (isset($data['result']['tags'])) {
             $tags = array_map(function($tag) {
-                // if ($tag['confidence'] >= $threshold) {
-                //     return $tag['tag']['en'];
-                // }
+                return $tag['tag']['en'];
             }, $data['result']['tags']);
             $description = implode(", ", $tags);
 
