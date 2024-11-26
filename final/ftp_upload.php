@@ -2,7 +2,6 @@
 session_start();
 
 $debug = [];
-// $threshold = isset($_POST['threshold']) ? (float)$_POST['threshold'] : 50;
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     echo json_encode(['message' => 'Unauthorized access', 'debug' => $debug]);
@@ -64,7 +63,7 @@ if (isset($_FILES['file'])) {
 
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
-            $data = json_decode($response, true);           
+            $data = json_decode($response, true);
         } else {
             $debug[] = "API call failed: $curl_error";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
