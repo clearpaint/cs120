@@ -73,34 +73,52 @@ if (isset($_FILES['file'])) {
 
         // Step 5: Write metadata based on API response
         if (isset($data['result']['tags'])) {
-            $tags = array_map(function($tag) {
+            $tags = array_map(function ($tag) {
                 return $tag['tag']['en'];
             }, $data['result']['tags']);
             $description = implode(", ", $tags);
-
+        
+            $debug[] = "Collection of tags: " . $description;
+        
+            // Metadata content
             $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
-            $metadata_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
+        
+            $local_upload = './uploads/';        
+            $metadata_file = $local_upload . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
+        
+        
+            // Write metadata to the file
+            if (file_put_contents($metadata_file, $metadata_content) !== false) {
+                $debug[] = "Metadata file created successfully locally at: " . $metadata_file;
 
-            $temp_metadata_file = tempnam(sys_get_temp_dir(), 'meta');
-            file_put_contents($temp_metadata_file, $metadata_content);
+                $remote_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
 
-            if (ftp_put($ftp_conn, $metadata_file, $temp_metadata_file, FTP_ASCII)) {
-                $debug[] = "Metadata file uploaded successfully to: $metadata_file";
+                if (ftp_put($ftp_conn, $remote_file, $metadata_file, FTP_ASCII)) {
+                    $debug[] = "Metadata file uploaded successfully remotely to: $remote_file, deleting local copy";
+                    echo json_encode([
+                        'message' => 'File and metadata uploaded successfully',
+                        'description' => $description,
+                        'debug' => $debug
+                    ]);
+                } else {
+                    $debug[] = "Failed to remotely upload metadata file to: $remote_file";
+                    echo json_encode(['message' => 'Failed to upload metadata file', 'debug' => $debug]);
+                }
+            } else {
+                $debug[] = "Failed to create metadata file.";
                 echo json_encode([
-                    'message' => 'File and metadata uploaded successfully',
-                    'description' => $description,
+                    'message' => 'Failed to create metadata file.',
                     'debug' => $debug
                 ]);
-            } else {
-                $debug[] = "Failed to upload metadata file to: $metadata_file";
-                echo json_encode(['message' => 'Failed to upload metadata file', 'debug' => $debug]);
             }
-
-            unlink($temp_metadata_file);
         } else {
             $debug[] = "No tags found in API response.";
-            echo json_encode(['message' => 'Failed to get description from API', 'debug' => $debug]);
-        }
+            echo json_encode([
+                'message' => 'Failed to get tags from API response.',
+                'debug' => $debug
+            ]);
+        }           
+        unlink($metadata_file);
     } else {
         $debug[] = "Failed to upload file to FTP: $remote_file";
         echo json_encode(['message' => 'Failed to upload file', 'debug' => $debug]);
