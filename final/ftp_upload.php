@@ -2,6 +2,7 @@
 session_start();
 
 $debug = [];
+$threshold = isset($_POST['threshold']) ? (float)$_POST['threshold'] : 50;
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     echo json_encode(['message' => 'Unauthorized access', 'debug' => $debug]);
@@ -73,9 +74,15 @@ if (isset($_FILES['file'])) {
 
         // Step 5: Write metadata based on API response
         if (isset($data['result']['tags'])) {
-            $tags = array_map(function ($tag) {
-                return $tag['tag']['en'];
-            }, $data['result']['tags']);
+            foreach ($data['result']['tags'] as $tag) {
+                if ($tag['confidence'] >= $threshold) {
+                    $tags[] = [
+                    'tag' => $tag['tag']['en'],
+                    'confidence' => $tag['confidence']
+                    ];
+                }
+            }
+            
             $description = implode(", ", $tags);
                 
             // Metadata content
@@ -95,6 +102,7 @@ if (isset($_FILES['file'])) {
                     $debug[] = "Metadata file uploaded successfully remotely to: $remote_file, deleting local copy";
                     echo json_encode([
                         'message' => 'File and metadata uploaded successfully',
+                        'tags' => $tags,
                         'description' => $description,
                         'debug' => $debug
                     ]);
