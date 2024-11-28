@@ -77,9 +77,7 @@ if (isset($_FILES['file'])) {
                 return $tag['tag']['en'];
             }, $data['result']['tags']);
             $description = implode(", ", $tags);
-        
-            $debug[] = "Collection of tags: " . $description;
-        
+                
             // Metadata content
             $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
         
