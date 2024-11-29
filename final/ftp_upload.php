@@ -99,6 +99,7 @@ if (isset($_FILES['file'])) {
                         'message' => 'File and metadata uploaded successfully',
                         'tags' => $tags,
                         'description' => $description,
+                        'debug' => $debug
                     ]);
                 } else {
                     $debug[] = "Failed to remotely upload metadata file to: $remote_file";
