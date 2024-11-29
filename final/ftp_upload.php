@@ -85,14 +85,11 @@ if (isset($_FILES['file'])) {
             
             $description = implode(", ", $tags);
                 
-            // Metadata content
             $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
         
             $local_upload = './uploads/';        
             $metadata_file = $local_upload . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
-        
-        
-            // Write metadata to the file
+                
             if (file_put_contents($metadata_file, $metadata_content) !== false) {
                 $debug[] = "Metadata file created successfully locally at: " . $metadata_file;
 
@@ -104,7 +101,6 @@ if (isset($_FILES['file'])) {
                         'message' => 'File and metadata uploaded successfully',
                         'tags' => $tags,
                         'description' => $description,
-                        'debug' => $debug
                     ]);
                 } else {
                     $debug[] = "Failed to remotely upload metadata file to: $remote_file";
