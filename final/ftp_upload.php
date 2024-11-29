@@ -83,17 +83,15 @@ if (isset($_FILES['file'])) {
                 }
             }
             
-            $description = implode(", ", $tags);
-                
+            $description = implode(", ", $tags);     
             $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
-        
+    
+            $remote_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
             $local_upload = './uploads/';        
             $metadata_file = $local_upload . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
                 
             if (file_put_contents($metadata_file, $metadata_content) !== false) {
                 $debug[] = "Metadata file created successfully locally at: " . $metadata_file;
-
-                $remote_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
 
                 if (ftp_put($ftp_conn, $remote_file, $metadata_file, FTP_ASCII)) {
                     $debug[] = "Metadata file uploaded successfully remotely to: $remote_file, deleting local copy";
