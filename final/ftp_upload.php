@@ -92,7 +92,6 @@ if (isset($_FILES['file'])) {
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
             $data = json_decode($response, true);
-            $debug[] = "API Response Data: " . print_r($data, true);
         } else {
             $debug[] = "API call failed: $curl_error";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
