@@ -5,6 +5,10 @@ return [
   'ftp_pass' => "FTP_PASS",
   'ftp_port' => "21",
   'ftp_domain' => 'FTP_DOMAIN',
+  'db_host' => 'DB_HOST',
+  'db_user' => 'DB_USER',
+  'db_pwd' => 'DB_PWD',
+  'db_name' => 'DB_NAME',
   'api_key' => 'API_KEY',
   'api_secret' => 'API_SECRET'
 ];

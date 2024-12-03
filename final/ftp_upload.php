@@ -48,6 +48,36 @@ if (isset($_FILES['file'])) {
     if (ftp_put($ftp_conn, $remote_file, $file, FTP_BINARY)) {
         $debug[] = "File uploaded successfully to: $remote_file";
 
+        // Step 4: Mock API Response
+        //  $mock_api_response = [
+        //     'result' => [
+        //         'tags' => [
+        //             ['confidence' => 72.304817199707, 'tag' => ['en' => 'star']],
+        //             ['confidence' => 67.556610107422, 'tag' => ['en' => 'sun']],
+        //             ['confidence' => 60.43567276001, 'tag' => ['en' => 'celestial body']],
+        //             ['confidence' => 43.794635772705, 'tag' => ['en' => 'sky']],
+        //             ['confidence' => 41.704250335693, 'tag' => ['en' => 'landscape']],
+        //             // add more tags as needed for testing
+        //         ]
+        //     ],
+        //     'status' => ['text' => 'success']
+        // ];
+
+        // // Convert to JSON response, simulating a real API response
+        // $response = json_encode($mock_api_response);
+        // $debug[] = "Mock API response used for file: $file_url";
+
+        // // Process the mocked API response
+        // if ($response) {
+        //     $debug[] = "API call successful for file: $file_url";
+        //     $data = json_decode($response, true);
+        // } else {
+        //     $debug[] = "API call failed";
+        //     echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
+        //     ftp_close($ftp_conn);
+        //     exit;
+        // }
+
         // Step 4: Call API with FTP file URL
         $file_url = $config['ftp_domain'] . "/uploads/" . urlencode($file_name);
         $api_key =  $config['api_key'];
@@ -65,6 +95,7 @@ if (isset($_FILES['file'])) {
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
             $data = json_decode($response, true);
+            $debug[] = "API Response Data: " . print_r($data, true);
         } else {
             $debug[] = "API call failed: $curl_error";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
@@ -99,6 +130,7 @@ if (isset($_FILES['file'])) {
                         'message' => 'File and metadata uploaded successfully',
                         'tags' => $tags,
                         'description' => $description,
+                        'debug' => $debug
                     ]);
                 } else {
                     $debug[] = "Failed to remotely upload metadata file to: $remote_file";
