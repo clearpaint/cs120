@@ -57,17 +57,14 @@ if (isset($_FILES['file'])) {
         //             ['confidence' => 60.43567276001, 'tag' => ['en' => 'celestial body']],
         //             ['confidence' => 43.794635772705, 'tag' => ['en' => 'sky']],
         //             ['confidence' => 41.704250335693, 'tag' => ['en' => 'landscape']],
-        //             // add more tags as needed for testing
         //         ]
         //     ],
         //     'status' => ['text' => 'success']
         // ];
 
-        // // Convert to JSON response, simulating a real API response
         // $response = json_encode($mock_api_response);
         // $debug[] = "Mock API response used for file: $file_url";
 
-        // // Process the mocked API response
         // if ($response) {
         //     $debug[] = "API call successful for file: $file_url";
         //     $data = json_decode($response, true);
