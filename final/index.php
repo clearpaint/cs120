@@ -18,7 +18,7 @@
 <form method="post">
     <h2>Login</h2>
     <?php if (isset($_GET['error'])): ?>
-      <p style="color:red;"><?php echo htmlspecialchars($_GET['error']); ?></p>
+      <p class="error"><?php echo htmlspecialchars($_GET['error']); ?></p>
     <?php endif; ?>
     <?php
       require 'db.php';
