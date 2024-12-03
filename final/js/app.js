@@ -168,6 +168,9 @@ function processImage() {
         form.appendChild(downloadButton);
         tagsContainer.appendChild(form);
       }
+
+      // Log data to console
+      console.log("Response Data:", data);
     })
     .catch((error) => {
       progress.style.display = "none";
@@ -186,37 +189,20 @@ function downloadImage() {
     .then((response) => {
       if (!response.ok) {
         return response.text().then((text) => {
-          // Log the raw response text to see any server-side error message
-          throw new Error(`Server error: ${text}`);
+          throw new Error(text);
         });
       }
-      // Check if the response is a valid blob (i.e., it contains image data)
-      if (response.headers.get("Content-Type").includes("image")) {
-        return response.blob(); // Proceed to retrieve the image blob
-      } else {
-        // Handle the case where the server does not return an image
-        return response.text().then((text) => {
-          throw new Error(`Unexpected response: ${text}`);
-        });
-      }
+      return response.blob();
     })
     .then((blob) => {
-      if (!blob || blob.size === 0) {
-        throw new Error(
-          "The downloaded file is empty. Check server-side processing."
-        );
-      }
-
       // Create a link to download the file
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "modified_image.jpg"; // Adjust filename as needed
+      a.download = "modified_image.jpg";
       document.body.appendChild(a);
       a.click();
       a.remove();
-      // Release the object URL after download
-      window.URL.revokeObjectURL(url);
     })
     .catch((error) => {
       console.error("Error:", error);
