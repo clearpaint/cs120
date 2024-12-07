@@ -156,8 +156,8 @@ function processImage() {
               tag.tag
             } (Confidence: ${tag.confidence.toFixed(2)}%)`;
 
-            li.appendChild(checkbox);
             li.appendChild(label);
+            li.appendChild(checkbox);
             ul.appendChild(li);
           });
         }

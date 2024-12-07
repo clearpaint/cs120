@@ -50,54 +50,54 @@ if (isset($_FILES['file'])) {
         $file_url = $config['ftp_domain'] . "/uploads/" . urlencode($file_name);
 
         // Step 4: Mock API Response
-        //  $mock_api_response = [
-        //     'result' => [
-        //         'tags' => [
-        //             ['confidence' => 72.304817199707, 'tag' => ['en' => 'star']],
-        //             ['confidence' => 67.556610107422, 'tag' => ['en' => 'sun']],
-        //             ['confidence' => 60.43567276001, 'tag' => ['en' => 'celestial body']],
-        //             ['confidence' => 43.794635772705, 'tag' => ['en' => 'sky']],
-        //             ['confidence' => 41.704250335693, 'tag' => ['en' => 'landscape']],
-        //         ]
-        //     ],
-        //     'status' => ['text' => 'success']
-        // ];
+         $mock_api_response = [
+            'result' => [
+                'tags' => [
+                    ['confidence' => 72.304817199707, 'tag' => ['en' => 'star']],
+                    ['confidence' => 67.556610107422, 'tag' => ['en' => 'sun']],
+                    ['confidence' => 60.43567276001, 'tag' => ['en' => 'celestial body']],
+                    ['confidence' => 43.794635772705, 'tag' => ['en' => 'sky']],
+                    ['confidence' => 41.704250335693, 'tag' => ['en' => 'landscape']],
+                ]
+            ],
+            'status' => ['text' => 'success']
+        ];
 
-        // $response = json_encode($mock_api_response);
-        // $debug[] = "Mock API response used for file: $file_url";
-
-        // if ($response) {
-        //     $debug[] = "API call successful for file: $file_url";
-        //     $data = json_decode($response, true);
-        // } else {
-        //     $debug[] = "API call failed";
-        //     echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
-        //     ftp_close($ftp_conn);
-        //     exit;
-        // }
-
-        // Step 4: Call API with FTP file URL
-        $api_key =  $config['api_key'];
-        $api_secret =  $config['api_secret'];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.imagga.com/v2/tags?image_url=" . urlencode($file_url));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERPWD, "$api_key:$api_secret");      
-
-        $response = curl_exec($ch);
-        $curl_error = curl_error($ch);
-        curl_close($ch);
+        $response = json_encode($mock_api_response);
+        $debug[] = "Mock API response used for file: $file_url";
 
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
             $data = json_decode($response, true);
         } else {
-            $debug[] = "API call failed: $curl_error";
+            $debug[] = "API call failed";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
             ftp_close($ftp_conn);
             exit;
         }
+
+        // Step 4: Call API with FTP file URL
+        // $api_key =  $config['api_key'];
+        // $api_secret =  $config['api_secret'];
+
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, "https://api.imagga.com/v2/tags?image_url=" . urlencode($file_url));
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($ch, CURLOPT_USERPWD, "$api_key:$api_secret");      
+
+        // $response = curl_exec($ch);
+        // $curl_error = curl_error($ch);
+        // curl_close($ch);
+
+        // if ($response) {
+        //     $debug[] = "API call successful for file: $file_url";
+        //     $data = json_decode($response, true);
+        // } else {
+        //     $debug[] = "API call failed: $curl_error";
+        //     echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
+        //     ftp_close($ftp_conn);
+        //     exit;
+        // }
 
         // Step 5: Write metadata based on API response
         if (isset($data['result']['tags']) && count($data['result']['tags']) > 0) {

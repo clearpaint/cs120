@@ -25,13 +25,16 @@ form {
   padding: 20px;
   border-radius: 5px;
 }
-label, input, button {
+label,
+input,
+button {
   display: block;
   width: 100%;
   margin-bottom: 10px;
   color: #ffffff;
 }
-input, button {
+input,
+button {
   padding: 10px;
   background-color: #333333;
   border: none;
@@ -57,7 +60,8 @@ button {
   margin: 0 auto;
 }
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -80,6 +84,8 @@ button {
 }
 .tag-list li {
   margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
 }
 #drop-area {
   border: 2px dashed #ffffff;
