@@ -110,7 +110,7 @@ function processImage() {
     formData.append("imageUrl", imageUrl);
   }
 
-  fetch("process_image.php", { method: "POST", body: formData })
+  fetch("ftp_upload.php", { method: "POST", body: formData })
     .then((response) => response.json())
     .then((data) => {
       // Hide progress indicator
@@ -141,23 +141,26 @@ function processImage() {
         const ul = document.createElement("ul");
         ul.className = "tag-list";
 
-        data.tags.forEach((tag) => {
-          const li = document.createElement("li");
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.name = "tags[]";
-          checkbox.value = tag.tag;
-          checkbox.checked = true;
+        if (data.tags && data.tags.length > 0) {
+          // Process tags only if there are any
+          data.tags.forEach((tag) => {
+            const li = document.createElement("li");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "tags[]";
+            checkbox.value = tag.tag;
+            checkbox.checked = true;
 
-          const label = document.createElement("label");
-          label.textContent = `${tag.tag} (Confidence: ${tag.confidence.toFixed(
-            2
-          )}%)`;
+            const label = document.createElement("label");
+            label.textContent = `${
+              tag.tag
+            } (Confidence: ${tag.confidence.toFixed(2)}%)`;
 
-          li.appendChild(checkbox);
-          li.appendChild(label);
-          ul.appendChild(li);
-        });
+            li.appendChild(checkbox);
+            li.appendChild(label);
+            ul.appendChild(li);
+          });
+        }
 
         const downloadButton = document.createElement("button");
         downloadButton.type = "button";
@@ -183,7 +186,15 @@ function processImage() {
 
 function downloadImage() {
   const form = document.getElementById("tagsForm");
-  const formData = new FormData(form);
+  const checkedTags = [
+    ...form.querySelectorAll('input[name="tags[]"]:checked'),
+  ];
+
+  // Create a new FormData object with only the checked tags
+  const formData = new FormData();
+  checkedTags.forEach((checkbox) => {
+    formData.append("tags[]", checkbox.value);
+  });
 
   fetch("embed_metadata.php", { method: "POST", body: formData })
     .then((response) => {

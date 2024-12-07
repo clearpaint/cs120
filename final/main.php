@@ -18,6 +18,11 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
   <a href="logout.php" class="logout">Logout</a>
 </div>
 <div class="container">
+  <?php
+    if (isset($_SESSION['username'])) {
+      echo "<h1>Welcome, " . htmlspecialchars($_SESSION['username']) . ".</h1>";
+    }
+  ?>
   <h2>Process Image</h2>
   <form id="processForm" enctype="multipart/form-data">
     <label>Choose an Option:</label>
