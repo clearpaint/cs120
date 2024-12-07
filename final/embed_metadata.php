@@ -22,7 +22,7 @@
     $temp_image_path = sys_get_temp_dir() . '/' . basename($file_url);
     $image_data = file_get_contents($file_url);
     if ($image_data === false) {
-        throw new Exception('Failed to download the remote image file.');
+      throw new Exception('Failed to download the remote image file.');
     }
     file_put_contents($temp_image_path, $image_data);
 
@@ -57,13 +57,12 @@
       unlink($temp_output_path);
 
   } catch (Exception $e) {
-    // Handle errors
     if (isset($imagick)) {
-        $imagick->clear();
-        $imagick->destroy();
+      $imagick->destroy();
+      $imagick->clear();
     }
     if (isset($temp_image_path) && file_exists($temp_image_path)) {
-        unlink($temp_image_path);
+      unlink($temp_image_path);
     }
     echo 'Error processing image: ' . htmlspecialchars($e->getMessage());
   }

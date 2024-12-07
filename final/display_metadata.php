@@ -1,5 +1,4 @@
 <?php
-// Check if Imagick extension is loaded
 if (extension_loaded('imagick')) {
     echo "<!DOCTYPE html>
 <html lang='en'>
@@ -52,56 +51,49 @@ if (extension_loaded('imagick')) {
     <h2>=== Image Metadata ===</h2>";
 
     try {
-        // Create an Imagick object from an image file (replace with the actual image path)
-        $image = new Imagick('/Users/rhong/Downloads/modified_image.JPG');  // Replace with your image path
+        $image = new Imagick('/Users/rhong/Downloads/modified_image.JPG');  
         
-        // Get all properties (metadata) of the image
         $properties = $image->getImageProperties();
 
-        // Categorize and group properties
         $categories = [
-            'EXIF' => [],
-            'JPEG' => [],
-            'IPTC' => [],
-            'XMP' => [],
-            'Other' => []
+          'EXIF' => [],
+          'JPEG' => [],
+          'IPTC' => [],
+          'XMP' => [],
+          'Other' => []
         ];
 
         // Loop through all properties and categorize them
         foreach ($properties as $key => $value) {
-            if (strpos($key, 'exif:') === 0) {
-                $categories['EXIF'][$key] = $value;
-            } elseif (strpos($key, 'jpeg:') === 0) {
-                $categories['JPEG'][$key] = $value;
-            } elseif (strpos($key, 'iptc:') === 0) {
-                $categories['IPTC'][$key] = $value;
-            } elseif (strpos($key, 'xmp:') === 0) {
-                $categories['XMP'][$key] = $value;
-            } else {
-                $categories['Other'][$key] = $value;
-            }
+          if (strpos($key, 'exif:') === 0) {
+            $categories['EXIF'][$key] = $value;
+          } elseif (strpos($key, 'jpeg:') === 0) {
+            $categories['JPEG'][$key] = $value;
+          } elseif (strpos($key, 'iptc:') === 0) {
+            $categories['IPTC'][$key] = $value;
+          } elseif (strpos($key, 'xmp:') === 0) {
+            $categories['XMP'][$key] = $value;
+          } else {
+            $categories['Other'][$key] = $value;
+          }
         }
 
-        // Display each category with a heading and better formatting
         foreach ($categories as $category => $properties) {
-            if (!empty($properties)) {
-                echo "<div class='category-title'><strong>$category Metadata</strong></div>";
-                echo "<table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>";
+          if (!empty($properties)) {
+            echo "<div class='category-title'><strong>$category Metadata</strong></div>";
+            echo "<table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>";
 
-                foreach ($properties as $key => $value) {
-                    // Enhance readability with indentation and label formatting
-                    $formatted_key = ucfirst(str_replace(['exif:', 'jpeg:', 'iptc:', 'xmp:'], '', $key)); // Clean up the prefix
-                    echo "<tr><td>$formatted_key</td><td>$value</td></tr>";
-                }
-
-                echo "</tbody></table>";
+            foreach ($properties as $key => $value) {
+              $formatted_key = ucfirst(str_replace(['exif:', 'jpeg:', 'iptc:', 'xmp:'], '', $key)); 
+              echo "<tr><td>$formatted_key</td><td>$value</td></tr>";
             }
-        }
 
-        // Clean up the image object
+            echo "</tbody></table>";
+          }
+        }
         $image->destroy();
     } catch (Exception $e) {
-        echo "<p>Error using Imagick: " . $e->getMessage() . "</p>";
+      echo "<p>Error using Imagick: " . $e->getMessage() . "</p>";
     }
 
     echo "</div>
