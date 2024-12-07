@@ -169,6 +169,11 @@ button:hover {
   <a href="logout.php" class="logout">Logout</a>
 </div>
 <div class="container">
+  <?php
+    if (isset($_SESSION['username'])) {
+      echo "<h1>Welcome, " . htmlspecialchars($_SESSION['username']) . ".</h1>";
+    }
+  ?>
   <h2>Process Image</h2>
   <form id="processForm" enctype="multipart/form-data">
     <label>Choose an Option:</label>
@@ -199,6 +204,19 @@ button:hover {
   <div id="imagePreview" class="image-preview"></div>
   <div id="debug" class="debug-window"></div>
   <div id="tags-container"></div>
+  
+  <div id="display-metadata-btn-container">
+    <button id="displayMetadataBtn">Display Metadata</button>
+  </div>
+
+  <div id="metadataModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <div id="metadataReview" class="metadata-review">
+      </div>
+    </div>
+  </div>
+
 </div>
 <script src="js/app.js"></script>
 </body>

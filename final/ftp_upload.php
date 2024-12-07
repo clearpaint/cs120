@@ -19,6 +19,7 @@ $ftp_pass = $config['ftp_pass'];
 if (isset($_FILES['file'])) {
     $file = $_FILES['file']['tmp_name'];
     $file_name = basename($_FILES['file']['name']);
+    $_SESSION['file_name'] = $file_name;
     $remote_file = "uploads/" . $file_name;
 
     // Step 1: Connect to FTP server
@@ -47,33 +48,61 @@ if (isset($_FILES['file'])) {
     // Step 3: Upload the file
     if (ftp_put($ftp_conn, $remote_file, $file, FTP_BINARY)) {
         $debug[] = "File uploaded successfully to: $remote_file";
-
-        // Step 4: Call API with FTP file URL
         $file_url = $config['ftp_domain'] . "/uploads/" . urlencode($file_name);
-        $api_key =  $config['api_key'];
-        $api_secret =  $config['api_secret'];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.imagga.com/v2/tags?image_url=" . urlencode($file_url));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERPWD, "$api_key:$api_secret");      
+        // Step 4: Mock API Response
+         $mock_api_response = [
+            'result' => [
+                'tags' => [
+                    ['confidence' => 72.304817199707, 'tag' => ['en' => 'star']],
+                    ['confidence' => 67.556610107422, 'tag' => ['en' => 'sun']],
+                    ['confidence' => 60.43567276001, 'tag' => ['en' => 'celestial body']],
+                    ['confidence' => 43.794635772705, 'tag' => ['en' => 'sky']],
+                    ['confidence' => 41.704250335693, 'tag' => ['en' => 'landscape']],
+                ]
+            ],
+            'status' => ['text' => 'success']
+        ];
 
-        $response = curl_exec($ch);
-        $curl_error = curl_error($ch);
-        curl_close($ch);
+        $response = json_encode($mock_api_response);
+        $debug[] = "Mock API response used for file: $file_url";
 
         if ($response) {
             $debug[] = "API call successful for file: $file_url";
             $data = json_decode($response, true);
         } else {
-            $debug[] = "API call failed: $curl_error";
+            $debug[] = "API call failed";
             echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
             ftp_close($ftp_conn);
             exit;
         }
 
+        // Step 4: Call API with FTP file URL
+        // $api_key =  $config['api_key'];
+        // $api_secret =  $config['api_secret'];
+
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, "https://api.imagga.com/v2/tags?image_url=" . urlencode($file_url));
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($ch, CURLOPT_USERPWD, "$api_key:$api_secret");      
+
+        // $response = curl_exec($ch);
+        // $curl_error = curl_error($ch);
+        // curl_close($ch);
+
+        // if ($response) {
+        //     $debug[] = "API call successful for file: $file_url";
+        //     $data = json_decode($response, true);
+        // } else {
+        //     $debug[] = "API call failed: $curl_error";
+        //     echo json_encode(['message' => 'API call failed', 'debug' => $debug]);
+        //     ftp_close($ftp_conn);
+        //     exit;
+        // }
+
         // Step 5: Write metadata based on API response
-        if (isset($data['result']['tags'])) {
+        if (isset($data['result']['tags']) && count($data['result']['tags']) > 0) {
+            $tags = [];
             foreach ($data['result']['tags'] as $tag) {
                 if ($tag['confidence'] >= $threshold) {
                     $tags[] = [
@@ -83,34 +112,57 @@ if (isset($_FILES['file'])) {
                 }
             }
             
-            $description = implode(", ", $tags);     
-            $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
-    
-            $remote_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
-            $local_upload = './uploads/';        
-            $metadata_file = $local_upload . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
+            if (count($tags) > 0) {
+                // Prepare the description from valid tags
+                $tag_names = array_map(function ($tag) {
+                    return $tag['tag'];
+                }, $tags);
+                $description = implode(", ", $tag_names);    
                 
-            if (file_put_contents($metadata_file, $metadata_content) !== false) {
-                $debug[] = "Metadata file created successfully locally at: " . $metadata_file;
-
-                if (ftp_put($ftp_conn, $remote_file, $metadata_file, FTP_ASCII)) {
-                    $debug[] = "Metadata file uploaded successfully remotely to: $remote_file, deleting local copy";
+                // Create metadata content
+                $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
+        
+                // Prepare metadata file paths
+                $remote_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
+                $local_upload = './uploads/';        
+                $metadata_file = $local_upload . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
+        
+                // Write metadata content to local file
+                if (file_put_contents($metadata_file, $metadata_content) !== false) {
+                    $debug[] = "Metadata file created successfully locally at: " . $metadata_file;
+        
+                    // Upload metadata file to FTP server
+                    if (ftp_put($ftp_conn, $remote_file, $metadata_file, FTP_ASCII)) {
+                        $debug[] = "Metadata file uploaded successfully remotely to: $remote_file, deleting local copy";
+                        $_SESSION['image_path'] = $file_url;
+                        echo json_encode([
+                            'message' => 'File and metadata uploaded successfully',
+                            'tags' => $tags,
+                            'description' => $description,
+                            'debug' => $debug
+                        ]);
+                    } else {
+                        $debug[] = "Failed to remotely upload metadata file to: $remote_file";
+                        echo json_encode(['message' => 'Failed to upload metadata file', 'debug' => $debug]);
+                    }
+                } else {
+                    $debug[] = "Failed to create metadata file.";
                     echo json_encode([
-                        'message' => 'File and metadata uploaded successfully',
-                        'tags' => $tags,
-                        'description' => $description,
+                        'message' => 'Failed to create metadata file.',
                         'debug' => $debug
                     ]);
-                } else {
-                    $debug[] = "Failed to remotely upload metadata file to: $remote_file";
-                    echo json_encode(['message' => 'Failed to upload metadata file', 'debug' => $debug]);
                 }
             } else {
-                $debug[] = "Failed to create metadata file.";
+                // Case when no tags meet the threshold
+                $firstTagConfidence = floor($data['result']['tags'][0]['confidence']);
+                $debug[] = "No tags found that meet the threshold of $threshold%";
+                $debug[] = "Minimum confidence score of $firstTagConfidence is needed to yield results.";
                 echo json_encode([
-                    'message' => 'Failed to create metadata file.',
+                    'message' => 'No tags met the threshold value.',
                     'debug' => $debug
                 ]);
+                ftp_close($ftp_conn);
+                exit;
             }
         } else {
             $debug[] = "No tags found in API response.";
