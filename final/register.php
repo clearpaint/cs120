@@ -25,7 +25,18 @@
               $stmt->bindParam(':password', $password);
               $stmt->execute();
 
-              echo "Registration successful!";
+              echo "Registration successful! Redirecting to login in <span id='countdown'>5</span> second(s).<p>";
+              echo "<script>
+                      let countdown = 5;
+                      const interval = setInterval(() => {
+                        countdown--;
+                        document.getElementById('countdown').textContent = countdown;
+                        if (countdown === 0) {
+                          clearInterval(interval);
+                          window.location.href = 'index.php';
+                        }
+                      }, 1000);
+                    </script>";
           } catch (PDOException $e) {
             if ($e->getCode() == 23000) { 
               echo "Username or email already exists.";
@@ -44,8 +55,10 @@
       <label for="password">Password:</label>
       <input type="password" id="password" name="password" required>
 
-      <button type="submit">Register</button>
-      <button type="button" id="loginRedirectBtn">Login</button>
+      <div id="auth-actions">
+        <button type="submit">Register</button>
+        <button type="button" id="loginRedirectBtn">Login</button>
+      </div>
     </form>
   </div>
 </body>

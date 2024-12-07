@@ -19,6 +19,7 @@ $ftp_pass = $config['ftp_pass'];
 if (isset($_FILES['file'])) {
     $file = $_FILES['file']['tmp_name'];
     $file_name = basename($_FILES['file']['name']);
+    $_SESSION['file_name'] = $file_name;
     $remote_file = "uploads/" . $file_name;
 
     // Step 1: Connect to FTP server

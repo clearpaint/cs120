@@ -11,6 +11,7 @@
   $selected_tags = isset($_POST['tags']) ? $_POST['tags'] : [];
 
   $file_url = $_SESSION['image_path'];
+  $file_name = $_SESSION['file_name'];
 
   try {
     if (!class_exists('Imagick')) {
@@ -44,10 +45,19 @@
 
     $image_type = mime_content_type($temp_output_path);
     header('Content-Type: ' . $image_type);
-    header('Content-Disposition: attachment; filename="modified_image.jpg"');
+    header('Content-Disposition: attachment; filename="' . $file_name . '_modified_image.jpg"');
     readfile($temp_output_path);
 
-    unlink($temp_output_path);
+    $temp_output_path = sys_get_temp_dir() . '/output_image.jpg';
+    $imagick->writeImage($temp_output_path);
+
+    // Ensure file still exists for reference within display_metadata.php
+    if (!file_exists($temp_output_path)) {
+        echo "<p>Error: Image file does not exist at $temp_output_path</p>";
+        exit;
+    }
+
+    $_SESSION['temp_output_path'] = $temp_output_path;
   } catch (Exception $e) {
     if (isset($imagick)) {
       $imagick->destroy();

@@ -85,6 +85,9 @@ function processImage() {
   // Show progress indicator
   progress.style.display = "block";
 
+  // Make debug window visible
+  debugWindow.style.display = "block";
+
   // Clear previous debug messages and tags
   debugWindow.innerHTML = "";
   tagsContainer.innerHTML = "";
@@ -206,14 +209,24 @@ function downloadImage() {
       return response.blob();
     })
     .then((blob) => {
+      const dropArea = document.getElementById("drop-area");
+      const fullFileName = dropArea
+        .querySelector("p")
+        .textContent.trim()
+        .split(":");
+      const fileName = fullFileName[1]?.trim().split(".")[0];
+      const fileExtension = fullFileName[1]?.trim().split(".")[1];
+
       // Create a link to download the file
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "modified_image.jpg";
+      a.download = `${fileName}_modified_image.jpg`;
       document.body.appendChild(a);
       a.click();
       a.remove();
+      document.getElementById("display-metadata-btn-container").style.display =
+        "block";
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -223,3 +236,44 @@ function downloadImage() {
       debugWindow.appendChild(p);
     });
 }
+
+const modal = document.getElementById("metadataModal");
+const btn = document.getElementById("displayMetadataBtn");
+const closeModalBtn = document.getElementById("closeModal");
+
+function displayMetadata() {
+  const metadataReview = document.getElementById("metadataReview");
+  metadataReview.innerHTML = "<p>Loading metadata...</p>";
+
+  fetch("display_metadata.php")
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((text) => {
+          throw new Error(text);
+        });
+      }
+      return response.text();
+    })
+    .then((data) => {
+      metadataReview.innerHTML = data;
+      modal.style.display = "block";
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      metadataReview.innerHTML = `<p>Error: ${error.message}</p>`;
+    });
+}
+
+btn.onclick = function () {
+  displayMetadata();
+};
+
+closeModalBtn.onclick = function () {
+  modal.style.display = "none";
+};
+
+window.onclick = function (event) {
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};

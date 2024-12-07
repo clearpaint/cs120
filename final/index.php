@@ -52,8 +52,10 @@
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
 
-    <button type="submit">Login</button>
-    <button type="button" id="registerRedirectBtn">Register</button>
+    <div id="auth-actions">
+      <button type="submit">Login</button>
+      <button type="button" id="registerRedirectBtn">Register</button>
+    </div>
   </form>
 </div>
 </body>

@@ -58,6 +58,19 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
   <div id="imagePreview" class="image-preview"></div>
   <div id="debug" class="debug-window"></div>
   <div id="tags-container"></div>
+  
+  <div id="display-metadata-btn-container">
+    <button id="displayMetadataBtn">Display Metadata</button>
+  </div>
+
+  <div id="metadataModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <div id="metadataReview" class="metadata-review">
+      </div>
+    </div>
+  </div>
+
 </div>
 <script src="js/app.js"></script>
 </body>
