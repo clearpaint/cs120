@@ -3,6 +3,13 @@
   ini_set('display_errors', 1);
   session_start();
 
+  $config = include 'config.php';
+  $ftp_server = $config['ftp_server'];
+  $ftp_port = $config['ftp_port'];
+  $ftp_user = $config['ftp_user'];
+  $ftp_pass = $config['ftp_pass'];
+  $ftp_path = $config['ftp_path'];
+
   if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('HTTP/1.1 401 Unauthorized');
     exit;
@@ -12,6 +19,9 @@
 
   $file_url = $_SESSION['image_path'];
   $file_name = $_SESSION['file_name'];
+  $base_name = pathinfo($file_name, PATHINFO_FILENAME);
+
+  $remote_file = $ftp_path . $base_name . '_modified_image.jpg';
 
   try {
     if (!class_exists('Imagick')) {
@@ -51,13 +61,44 @@
     $temp_output_path = sys_get_temp_dir() . '/output_image.jpg';
     $imagick->writeImage($temp_output_path);
 
-    // Ensure file still exists for reference within display_metadata.php
+    $ftp_conn = ftp_connect($ftp_server, $ftp_port);
+    if ($ftp_conn) {
+        $debug[] = "Connected to FTP server: $ftp_server:$ftp_port";
+    } else {
+        echo json_encode(['message' => 'Could not connect to FTP server', 'debug' => $debug]);
+        exit;
+    }
+
+    $login = ftp_login($ftp_conn, $ftp_user, $ftp_pass);
+    if ($login) {
+        $debug[] = "FTP login successful for user: $ftp_user";
+        ftp_pasv($ftp_conn, true); // Enable passive mode
+    } else {
+        $ftp_response = ftp_raw($ftp_conn, 'NOOP');
+        $debug[] = "FTP login failed for user: $ftp_user";
+        $debug[] = "FTP Server Response: " . implode(" | ", $ftp_response);
+        ftp_close($ftp_conn);
+        echo json_encode(['message' => 'FTP login failed', 'debug' => $debug]);
+        exit;
+    }
+
+    if (ftp_put($ftp_conn, $remote_file, $temp_output_path, FTP_BINARY)) {
+      $debug[] = "File uploaded successfully to: $remote_file";
+    }
+
+    if (file_exists($temp_image_path)) {
+      unlink($temp_image_path);
+    }
+
+    if (file_exists($temp_output_path)) {
+      unlink($temp_output_path);
+    }
+
     if (!file_exists($temp_output_path)) {
         echo "<p>Error: Image file does not exist at $temp_output_path</p>";
         exit;
     }
 
-    $_SESSION['temp_output_path'] = $temp_output_path;
   } catch (Exception $e) {
     if (isset($imagick)) {
       $imagick->destroy();

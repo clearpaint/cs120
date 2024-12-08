@@ -3,29 +3,37 @@
   ini_set('display_errors', 1);
   session_start();
 
+  $config = include 'config.php';
+  $ftp_domain = $config['ftp_domain'];
+
   if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('HTTP/1.1 401 Unauthorized');
     exit;
   }
 
-  $file_url = isset($_SESSION['temp_output_path']) ? $_SESSION['temp_output_path'] : '';
+  $file_name = $_SESSION['file_name'];
+  $base_name = pathinfo($file_name, PATHINFO_FILENAME);
 
-  if (empty($file_url)) {
+  $image_url = $ftp_domain . "/uploads/". $base_name . '_modified_image.jpg';
+  $temp_image_path = sys_get_temp_dir() . '/' . basename($image_url);
+
+  if (empty($image_url)) {
     echo "<p>Error: Image path is not set in the session.</p>";
     exit;
   }
 
-  if (!file_exists($file_url)) {
-    echo "<p>Error: Image file does not exist at $file_url</p>";
-    exit;
-  }
-
   try {
-    if (!class_exists('Imagick')) {
-      throw new Exception('Imagick extension is not installed or not enabled.');
-    }
+   $image_data = file_get_contents($image_url);
+   if ($image_data === false) {
+     throw new Exception('Failed to download the image file.');
+   }
+   file_put_contents($temp_image_path, $image_data);
 
-    $imagick = new Imagick($file_url);
+   if (!class_exists('Imagick')) {
+     throw new Exception('Imagick extension is not installed or enabled.');
+   }
+
+   $imagick = new Imagick($temp_image_path);
     
     if (!$imagick) {
       echo "<p>Error: Imagick failed to load the image.</p>";
@@ -79,9 +87,13 @@
       }
     }
     $imagick->destroy();
-    $temp_output_path = sys_get_temp_dir() . '/output_image.jpg';
-    unlink($temp_output_path);
+    if (file_exists($temp_image_path)) {
+      unlink($temp_image_path);
+    }
   } catch (Exception $e) {
     echo "<p>Error using Imagick: " . $e->getMessage() . "</p>";
+    if (file_exists($temp_image_path)) {
+      unlink($temp_image_path);
+    }
   }
 ?>

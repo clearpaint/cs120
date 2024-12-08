@@ -15,12 +15,13 @@ $ftp_server = $config['ftp_server'];
 $ftp_port = $config['ftp_port'];
 $ftp_user = $config['ftp_user'];
 $ftp_pass = $config['ftp_pass'];
+$ftp_path = $config['ftp_path'];
 
 if (isset($_FILES['file'])) {
     $file = $_FILES['file']['tmp_name'];
     $file_name = basename($_FILES['file']['name']);
     $_SESSION['file_name'] = $file_name;
-    $remote_file = "uploads/" . $file_name;
+    $remote_file = $ftp_path . $file_name;
 
     // Step 1: Connect to FTP server
     $ftp_conn = ftp_connect($ftp_server, $ftp_port);
@@ -123,7 +124,7 @@ if (isset($_FILES['file'])) {
                 $metadata_content = "Image Description: " . $description . "\nUploaded File Name: " . $file_name;
         
                 // Prepare metadata file paths
-                $remote_file = "uploads/" . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
+                $remote_file = $ftp_path . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
                 $local_upload = './uploads/';        
                 $metadata_file = $local_upload . pathinfo($file_name, PATHINFO_FILENAME) . "_metadata.txt";
         
